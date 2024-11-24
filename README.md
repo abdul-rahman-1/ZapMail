@@ -54,7 +54,7 @@ cd ZapMail
 # 2.  Install Required Libraries:
 Use pip to install the required dependencies:
 ```bash
-pip install pandascd ZapMail
+pip install pandas pillow openpyxl
 ```
 (Note: Other libraries like tkinter and smtplib are part of Python's standard library.)# 
 
