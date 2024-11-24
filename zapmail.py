@@ -6,7 +6,8 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import logging
 import re
-
+from PIL import Image, ImageTk  # For adding a logo image
+import webbrowser  # For opening GitHub link in browser
 
 class EmailSenderApp:
     def __init__(self, master):
@@ -15,17 +16,26 @@ class EmailSenderApp:
         master.geometry("700x850")
         master.configure(bg="#1f1b2e")
 
-
+        # Setup logging
         logging.basicConfig(filename="email_sender.log", level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
         self.excel_file = ""
         self.recipients = []
         self.columns = []
-        self.check_vars = []
+        self.check_vars = []  # Store checkbox variables for recipient statuses
+
+        # Add logo
+        self.logo_image = Image.open("logo.png")  # Assuming the logo is saved as "logo.png"
+        self.logo_image = self.logo_image.resize((100, 100), Image.Resampling.LANCZOS)  # Resize the image
+        self.logo = ImageTk.PhotoImage(self.logo_image)
 
         # GUI Elements
         self.header_label = tk.Label(master, text="Email Sender", font=("Georgia", 18, "bold"), fg="#ffd700", bg="#1f1b2e")
         self.header_label.pack(pady=20)
+
+        # Display logo at the top
+        self.logo_label = tk.Label(master, image=self.logo, bg="#1f1b2e")
+        self.logo_label.pack(pady=10)
 
         self.smtp_frame = tk.Frame(master, bg="#1f1b2e")
         self.smtp_frame.pack(pady=10)
@@ -42,7 +52,7 @@ class EmailSenderApp:
 
         tk.Label(self.smtp_frame, text="Email:", bg="#1f1b2e", fg="#ffffff").grid(row=2, column=0, padx=5, pady=5)
         self.email_entry = tk.Entry(self.smtp_frame, width=35, font=("Arial", 11), relief="solid", bg="#2c2a40", fg="#ffffff")
-        self.email_entry.insert(0, "email@hostinger")
+        self.email_entry.insert(0, "abdul-rahman@warlocksecurity.in")
         self.email_entry.grid(row=2, column=1, padx=5, pady=5)
 
         tk.Label(self.smtp_frame, text="Password:", bg="#1f1b2e", fg="#ffffff").grid(row=3, column=0, padx=5, pady=5)
@@ -61,13 +71,30 @@ class EmailSenderApp:
         self.message_text = tk.Text(master, height=15, width=60, font=("Georgia", 12), bg="#2c2a40", fg="#ffffff", wrap="word")
         self.message_text.pack(pady=5, padx=20)
 
+        # Adding a tag for highlighting variables
         self.message_text.tag_configure("highlight", foreground="#ffd700")
 
+        # Bind events to update highlights dynamically
         self.message_text.bind("<KeyRelease>", self.highlight_variables)
         self.message_text.bind("<Control-v>", self.handle_paste)
 
         self.send_button = tk.Button(master, text="Send Emails", command=self.send_emails, bg="#4CAF50", fg="white", font=("Helvetica", 12), relief="flat")
         self.send_button.pack(pady=20)
+
+        # Footer with name and clickable GitHub link
+        self.footer_frame = tk.Frame(master, bg="#1f1b2e")
+        self.footer_frame.pack(side="bottom", fill="x", pady=10)
+
+        self.name_label = tk.Label(self.footer_frame, text="Abdul Rahman | ", bg="#1f1b2e", fg="#ffd700", font=("Arial", 10))
+        self.name_label.pack(side="left", padx=10)
+
+        self.github_link_label = tk.Label(self.footer_frame, text="GitHub: https://github.com/abdul-rahman-1", bg="#1f1b2e", fg="#ffd700", font=("Arial", 10, "underline"))
+        self.github_link_label.pack(side="left", padx=1)
+        self.github_link_label.bind("<Button-1>", self.open_github_link)  # Bind click event to open GitHub
+
+    def open_github_link(self, event):
+        """Open the GitHub link in the default web browser."""
+        webbrowser.open("https://github.com/abdul-rahman-1")
 
     def browse_excel_file(self):
         self.excel_file = filedialog.askopenfilename(filetypes=[("Excel files", "*.xlsx")])
@@ -89,10 +116,10 @@ class EmailSenderApp:
     def update_message_template(self):
         """Update the message template with column placeholders."""
         column_placeholders = ", ".join([f"{{{col}}}" for col in self.columns])
-        default_message = f"""Dear {{Name}},\n\nThis email includes the following dynamic variables:\n{column_placeholders}\n\nWarm regards,\nAbdul Rahman\nWarlock Cyber Security"""
-        self.message_text.delete("1.0", tk.END)
-        self.message_text.insert(tk.END, default_message)
-        self.highlight_variables()
+        default_message = f"""Dear {{Name}},\n\nThis email includes the following dynamic variables:\n{column_placeholders}\n\nWarm regards,\nAbdul Rahman\nGitHub: https://github.com/abdul-rahman-1\nWarlock Cyber Security"""
+        self.message_text.delete("1.0", tk.END)  # Clear existing content
+        self.message_text.insert(tk.END, default_message)  # Insert default message
+        self.highlight_variables()  # Highlight variables
 
     def show_recipient_popup(self):
         """Show a popup with recipient statuses."""
@@ -105,7 +132,7 @@ class EmailSenderApp:
 
         self.check_vars = []
         for recipient in self.recipients:
-            var = IntVar(value=0)
+            var = IntVar(value=0)  # Default to unchecked
             cb = Checkbutton(popup, text=recipient.get("Name", "Unknown"), variable=var, bg="#1f1b2e", fg="#ffffff", state="disabled", selectcolor="#2c2a40")
             cb.pack(anchor="w", padx=10)
             self.check_vars.append((var, recipient))
@@ -113,18 +140,19 @@ class EmailSenderApp:
     def highlight_variables(self, event=None):
         """Highlight only valid Excel column variables inside curly braces."""
         content = self.message_text.get("1.0", tk.END)
-        self.message_text.tag_remove("highlight", "1.0", tk.END)
+        self.message_text.tag_remove("highlight", "1.0", tk.END)  # Clear previous highlights
 
-        for match in re.finditer(r"{(.*?)}", content):
+        # Highlight valid variables
+        for match in re.finditer(r"{(.*?)}", content):  # Match variables like {Name}
             variable = match.group(1)
-            if variable in self.columns:
+            if variable in self.columns:  # Only highlight if the variable is a valid Excel field
                 start_idx = f"1.0+{match.start()}c"
                 end_idx = f"1.0+{match.end()}c"
                 self.message_text.tag_add("highlight", start_idx, end_idx)
 
     def handle_paste(self, event):
         """Handle pasting content and apply highlighting after the paste."""
-        self.master.after(100, self.highlight_variables)
+        self.master.after(100, self.highlight_variables)  # Delay to wait for paste
 
     def send_emails(self):
         """Send emails and update recipient statuses."""
@@ -152,7 +180,7 @@ class EmailSenderApp:
                     server.send_message(message)
 
                 logging.info(f"Email sent successfully to {recipient_email}")
-                var.set(1)
+                var.set(1)  # Mark checkbox as checked
             except Exception as e:
                 logging.error(f"Failed to send email to {recipient_email}: {e}")
                 messagebox.showerror("Error", f"Failed to send email to {recipient_email}.\nError: {e}")
