@@ -52,7 +52,7 @@ class EmailSenderApp:
 
         tk.Label(self.smtp_frame, text="Email:", bg="#1f1b2e", fg="#ffffff").grid(row=2, column=0, padx=5, pady=5)
         self.email_entry = tk.Entry(self.smtp_frame, width=35, font=("Arial", 11), relief="solid", bg="#2c2a40", fg="#ffffff")
-        self.email_entry.insert(0, "abdul-rahman@warlocksecurity.in")
+        self.email_entry.insert(0, "yourname@example.com")
         self.email_entry.grid(row=2, column=1, padx=5, pady=5)
 
         tk.Label(self.smtp_frame, text="Password:", bg="#1f1b2e", fg="#ffffff").grid(row=3, column=0, padx=5, pady=5)
