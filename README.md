@@ -3,7 +3,7 @@
 
 ZapMail is a cutting-edge application designed to simplify and enhance the process of sending personalized emails to multiple recipients. Whether you’re running a marketing campaign, managing client communication, or reaching out to your team, ZapMail ensures that every email is tailored, professional, and delivered with ease.
 
-![Logo]([[https://cdn.discordapp.com/attachments/1221377254639276112/1315673790906110043/07a1d294-903f-4d7d-924a-7323e4bde4dc.jpg?ex=67584433&is=6756f2b3&hm=be2b20a73a95e7b7f62f91aee87b1a20b412f86047dcd129826fb14dea900d0f&](https://github.com/abdul-rahman-1/ZapMail?tab=readme-ov-file)](https://media.discordapp.net/attachments/1299308151975186544/1310088518046978068/DALLE_2024-11-24_09.10.44_-_A_sleek_and_modern_logo_design_for_ZapMail_a_professional_email-sending_tool._The_design_features_a_lightning_bolt_icon_integrated_with_an_envelope.webp?ex=67c52582&is=67c3d402&hm=9f9f8c93f8d342009c541b38ebd1418c2da1fb798e4dc27dce34dd621535c9b4&=&format=webp&width=671&height=671))
+![Logo](https://cdn.discordapp.com/attachments/1221377254639276112/1315673790906110043/07a1d294-903f-4d7d-924a-7323e4bde4dc.jpg?)
 
 
 # Why Choose ZapMail?
